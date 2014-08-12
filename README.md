@@ -1,6 +1,6 @@
 #VHS
 
-created by J.J.Idt[https://github.com/jjidt]
+[J.J. Idt](https://github.com/jjidt)
 
 lightweight ruby CRUDL module for use with postgresql
 
