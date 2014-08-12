@@ -18,11 +18,13 @@ require 'pg'
 
 DB = PG.connect(:dbname => 'your_database')
 
-###VHS will dynamically create classes based on your table names in the database
+###run VHS create_classes method and VHS will dynamically create classes based on your table names in the database
 
-if table is 'things'
+Vhs.create_classes
 
-class will be accessible at Vhs::Thing
+**if table is 'things'
+
+***class will be accessible at Vhs::Thing
 
 ###Create a new item in the 'things' table containing 'name' column in database
 
