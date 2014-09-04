@@ -1,7 +1,13 @@
 module Vhs
 
   def self.create_classes
-    db = get_table_names.map { |i| i.capitalize[0..-2] }
+    db = get_table_names.map do |i|
+      unless i[-3..-1] == 'ies'
+        i.capitalize[0..-2]
+      else
+        i.capitalize[0..-4] + 'y'
+      end
+    end
     db.each do |table_name|
       const_set(table_name, Class.new(Template))
     end
@@ -13,7 +19,11 @@ module Vhs
     def initialize(attributes)
       attributes.each_pair { |key, value| instance_variable_set(('@' + key), value) }
       attributes.each_key { |key| define_singleton_method(key.to_sym) { instance_eval(('@' + key)) } }
-      @table = self.class.to_s.gsub(/Vhs::/, '').downcase.concat("s")
+      unless self.class.to_s[-1] == 'y'
+        @table = self.class.to_s.gsub(/Vhs::/, '').downcase.concat("s")
+      else
+        @table = self.class.to_s.gsub(/Vhs::/, '').downcase[0..-2].concat("ies")
+      end
       @attributes = attributes
     end
 
@@ -57,7 +67,7 @@ module Vhs
       self.read("'*'" => '*')
     end
 
-    def self.join_by_name(attributes)
+    def self.join_by_name(attributes, selector = 'name')
       items = []
       left_table = self.retrieve_table
       right_table = attributes['right_table']
@@ -68,7 +78,7 @@ module Vhs
       results = DB.exec("SELECT #{left_table}.* FROM #{right_table}
               JOIN #{join_table} on (#{right_table}.id = #{join_table}.#{right_join_id})
               JOIN #{left_table} on (#{join_table}.#{left_join_id} = #{left_table}.id)
-              WHERE #{right_table}.name = '#{name}'")
+              WHERE #{right_table}.#{selector} = '#{name}'")
       results.each { |result| items << self.new(result) }
       items
     end
@@ -82,7 +92,11 @@ module Vhs
     end
 
     def self.retrieve_table
-      self.inspect.to_s.gsub(/Vhs::/, '').downcase.concat("s")
+      unless self.inspect.to_s[-1] == 'y'
+        @table = self.inspect.to_s.gsub(/Vhs::/, '').downcase.concat("s")
+      else
+        @table = self.inspect.to_s.gsub(/Vhs::/, '').downcase[0..-2].concat("ies")
+      end
     end
 
   end
